@@ -1,0 +1,21 @@
+name: Build the image and Push to Hub
+
+on:
+  push:
+    branches :
+      - main
+
+jobs:
+  publish_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code for updates
+        uses: actions/checkout@v4
+      
+      - name: build the image
+        run: docker build ./ -t bhargavaryan8/newsreportercrew:latest
+      
+      - name: push image to hub
+        run: |
+          docker login -u bhargavaryan8 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push bhargavaryan8/newsreportercrew
