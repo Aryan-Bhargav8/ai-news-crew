@@ -1,16 +1,23 @@
 from crewai import Task
 from agents import researcher, reporting_analyst
 
-research_task = Task(
-    description = """
-        Conduct a thorough research about {topic}
-        Make sure you find any interesting and relevant information given
-        the current year is 2026. """,
+def make_research_task(topic: str) -> Task:
+    safe_topic = topic.replace("{", "{{{").replace("}", "}}}")
+    return Task(
+        description=(
+            "Conduct a thorough research about "
+            + safe_topic
+            + "\n        Make sure you find any interesting and relevant information given"
+            + "\n        the current year is 2026."
+        ),
+        expected_output=(
+            "A list with 10 bullet points of the most relevant information about "
+            + safe_topic
+        ),
+        agent=researcher
+    )
 
-    expected_output="A list with 10 bullet points of the most relevant information about {topic}",
-
-    agent=researcher
-)
+research_task = make_research_task
 
 reporting_task = Task(
     description="""
