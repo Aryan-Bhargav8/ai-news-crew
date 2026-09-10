@@ -1,4 +1,5 @@
 import os
+import re
 from crewai import Agent, LLM
 from crewai_tools import SerperDevTool
 from dotenv import load_dotenv
@@ -16,9 +17,20 @@ llm = LLM(
 )
 
 
+def sanitize_topic(topic: str) -> str:
+    """Remove search operator injections and control characters from topic."""
+    # Strip known search operators (site:, OR, AND, filetype:, inurl:, intitle:, etc.)
+    topic = re.sub(r'\b(site|filetype|inurl|intitle|intext|cache|related|OR|AND|NOT)\s*:', '', topic, flags=re.IGNORECASE)
+    # Remove characters commonly used to chain or inject search operators
+    topic = re.sub(r'[|&+"\\<>]', ' ', topic)
+    # Collapse whitespace
+    topic = re.sub(r'\s+', ' ', topic).strip()
+    return topic
+
+
 researcher = Agent(
     role = "Senior Data Researcher",
-    goal = "Uncover cutting-edge developments in {topic}",
+    goal = "Uncover cutting-edge developments in {topic}",  # topic is sanitized at kickoff
     backstory = """
     You're a seasoned researcher with a knack for uncovering the latest
     developments in {topic}.
