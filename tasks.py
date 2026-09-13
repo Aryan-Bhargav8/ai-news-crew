@@ -1,8 +1,13 @@
 from crewai import Task
 from agents import researcher, reporting_analyst
+import os
+import re
 
 def make_research_task(topic: str) -> Task:
-    safe_topic = topic.replace("{", "{{{").replace("}", "}}}")
+    # Remove any characters that could be interpreted as template syntax
+    # by the underlying templating engine (CrewAI), rather than attempting
+    # to escape them, since escaping assumes a single templating pass.
+    safe_topic = re.sub(r"[{}]", "", topic).strip()
     return Task(
         description=(
             "Conduct a thorough research about "
@@ -17,7 +22,8 @@ def make_research_task(topic: str) -> Task:
         agent=researcher
     )
 
-research_task = make_research_task
+topic = os.environ.get("RESEARCH_TOPIC", "latest developments in AI")
+research_task = make_research_task(topic)
 
 reporting_task = Task(
     description="""

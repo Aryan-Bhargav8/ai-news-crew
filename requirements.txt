@@ -1,5 +1,5 @@
 aiohappyeyeballs==2.6.1
-aiohttp==3.13.3
+aiohttp==3.14.4  # fixed: payload resource cleanup on client disconnect (>=3.14.1)
 aiosignal==1.4.0
 aiosqlite==0.21.0
 annotated-doc==0.0.4
@@ -20,9 +20,9 @@ chromadb==1.1.1
 click==8.1.8
 colorama==0.4.6
 coloredlogs==15.0.1
-crewai==1.8.1
-crewai-tools==1.8.1
-cryptography==46.0.3
+crewai==1.15.1
+crewai-tools==1.15.1
+cryptography==49.0.3  # fixes DNS name constraint validation bypass against peer name (>=46.0.6, verified >=49.0.3)
 decorator==5.2.1
 defusedxml==0.7.1
 deprecation==2.1.0
@@ -54,24 +54,24 @@ httpx-sse==0.4.3
 huggingface-hub==0.36.0
 humanfriendly==10.0
 identify==2.6.16
-idna==3.11
+idna==3.15
 importlib_metadata==8.7.1
 importlib_resources==6.5.2
 instructor==1.12.0
 Jinja2==3.1.6
 jiter==0.10.0
 json5==0.10.0
-json_repair==0.25.3
+json_repair==0.31.0
 jsonref==1.1.0
 jsonschema==4.26.0
 jsonschema-specifications==2025.9.1
 kubernetes==35.0.0
 lancedb==0.5.7
-litellm==1.73.0
-lxml==6.0.2
+litellm==1.84.1  # fixed: password hash exposure and pass-the-hash authentication bypass (>=1.83.0, scrypt hashing + stripped password hashes from API responses); privilege escalation via API key generation allowing allowed_routes beyond caller's role permissions (>=1.83.14); SSTI in /prompts/test endpoint via sandboxed jinja2 environment; auth bypass via Host header injection; /config/update endpoint now enforces admin-only authorization (>=1.83.0); /user/update endpoint now blocks self-modification of user_role field (>=1.83.10); MCP Streamable HTTP OAuth2 passthrough auth bypass fixed (>=1.84.0); MCP Proxy UserAPIKeyAuth improper authentication bypass fixed (>=1.73.1, CVE affecting versions up to 1.59.8/1.73.0); directory traversal via crafted skill archive upload fixed (>=1.83.7); local file read via oidc/file/env references in /health/test_connection fixed (>=1.83.10); arbitrary code execution via unsandboxed custom code guardrails create/update endpoints fixed (>=1.82.0)
+lxml==6.1.0  # fixed: information disclosure via untrusted XML input leading to local file read when resolve_entities defaults to True (>=6.1.0)
 markdown-it-py==4.0.0
 MarkupSafe==3.0.3
-mcp==1.16.0
+mcp==1.28.1  # fixed: DNS rebinding protection disabled by default for HTTP-based servers (>=1.23.0); HTTP transports now verify authenticated principal before routing to existing sessions (>=1.27.2); WebSocket server transport now supports Host/Origin validation (>=1.28.1)
 mdurl==0.1.2
 mmh3==5.2.0
 mpmath==1.3.0
@@ -89,28 +89,28 @@ opentelemetry-exporter-otlp-proto-http==1.34.1
 opentelemetry-proto==1.34.1
 opentelemetry-sdk==1.34.1
 opentelemetry-semantic-conventions==0.55b1
-orjson==3.11.5
+orjson==3.11.6
 overrides==7.7.0
 packaging==25.0
 pdfminer.six==20251230
 pdfplumber==0.11.9
-pillow==12.1.0
+pillow==12.4.0  # fixed: DoS via malicious PDF causing infinite hang in PDF processing (>=12.2.0); DoS via crafted PCF font data due to missing decompression bomb check in PcfFontFile (>=12.3.0); DoS via excessive memory allocation in FontFile.compile() missing decompression bomb check (>=12.4.0); DoS via crafted BDF font file bypassing decompression bomb check in BdfFontFile.bdf_char() (>=12.3.0); DoS via crafted GD 2.x image file missing decompression bomb check in GdImageFile._open() (>=12.3.0); native heap out-of-bounds write via RankFilter with large odd filter size fixed (>=12.3.0); native heap out-of-bounds write via Image.paste()/crop()/alpha_composite() with near-INT32 coordinates fixed (>=12.3.0); DoS via unbounded zlib.decompress() bufsize in PdfParser.PdfStream.decode() fixed (>=12.3.0); DoS via crafted tiled JPEG2000 image causing excessive transient memory usage in Jpeg2KDecode.c fixed (>=12.3.0); native heap corruption via ImageCms.ImageCmsTransform.apply() with mismatched output image mode fixed (>=12.3.0); DoS via integer overflow in font glyph advance position tracking fixed (>=12.2.0); heap buffer overflow via nested list coordinates in ImagePath.Path/ImageDraw.polygon/line fixed (>=12.2.0); arbitrary command injection via unescaped file path in WindowsViewer.get_command() shell=True subprocess call fixed (>=12.3.0); information disclosure via TGA RLE encoder out-of-bounds read on mode 1 images fixed (>=12.3.0); DoS via negative byte count in %%BeginBinary EPS directive causing infinite loop fixed (>=12.3.0)
 platformdirs==4.5.1
 portalocker==2.7.0
 posthog==5.4.0
 pre_commit==4.5.1
 propcache==0.4.1
-protobuf==5.29.5
+protobuf==6.32.1
 py==1.11.0
-pyarrow==23.0.0
+pyarrow==23.0.1
 pybase64==1.4.3
 pycparser==2.23
 pydantic==2.11.10
 pydantic-extra-types==2.11.0
 pydantic-settings==2.10.1
 pydantic_core==2.33.2
-Pygments==2.19.2
-PyJWT==2.9.0
+Pygments==2.20.0
+PyJWT==2.13.2
 pylance==0.9.18
 PyMuPDF==1.26.7
 pypdfium2==5.3.0
@@ -119,14 +119,14 @@ pyproject_hooks==1.2.0
 pyreadline3==3.5.4
 python-dateutil==2.9.0.post0
 python-docx==1.2.0
-python-dotenv==1.1.1
-python-multipart==0.0.21
+python-dotenv==1.2.2
+python-multipart==0.0.31  # min safe: >=0.0.26 fixes DoS via crafted preamble/epilogue in multipart/form-data parsing; >=0.0.30 fixes RFC2231/5987 header parsing discrepancy allowing filename/name smuggling via filename*/name* extended parameters; >=0.0.30 (verify latest patch) fixes QuerystringParser treating ';' as field separator causing parser differential/form field smuggling; >=0.0.31 fixes negative Content-Length in parse_form causing entire body to be buffered in memory instead of chunked read
 pytube==15.0.0
 PyYAML==6.0.3
 ratelimiter==1.2.0.post0
 referencing==0.37.0
 regex==2024.9.11
-requests==2.32.5
+requests==2.33.0
 requests-oauthlib==2.0.0
 retry==0.9.2
 rich==14.2.0
@@ -135,13 +135,13 @@ rignore==0.7.6
 rpds-py==0.30.0
 semver==3.0.4
 sentry-sdk==2.50.0
-setuptools==80.9.0
+setuptools==83.0.0  # fixed: MANIFEST.in exclusion bypass in sdist via Unicode normalization collision (NFC/NFD) (>=83.0.0)
 shellingham==1.5.4
 six==1.17.0
 sniffio==1.3.1
-soupsieve==2.8.3
+soupsieve==2.8.4  # fixed: catastrophic backtracking DoS in CSS attribute selector regex with unterminated quoted value (>=2.8.4)
 sse-starlette==3.2.0
-starlette==0.50.0
+starlette==1.3.3  # fixed: SSRF and NTLM credential theft via UNC paths in StaticFiles on Windows (>=1.1.0); request.form() max_fields/max_part_size limits now enforced for application/x-www-form-urlencoded, preventing DoS (>=1.3.1); Host header validated against RFC 9112/RFC 3986 grammar when constructing request.url, preventing security restriction bypass via malformed Host header (>=1.0.1); HTTPEndpoint dispatch now restricts method lookup to a known set of HTTP verbs, preventing information disclosure and unintended method execution via non-standard HTTP methods (>=1.3.2); HTTP request path now validated before being used to reconstruct request.url, preventing authority-boundary confusion and host/netloc spoofing via malformed paths (>=1.3.0, verified >=1.3.3)
 sympy==1.14.0
 tenacity==9.1.2
 tiktoken==0.8.0
@@ -152,14 +152,14 @@ tqdm==4.67.1
 typer==0.21.1
 typing-inspection==0.4.2
 typing_extensions==4.15.0
-urllib3==2.6.3
-uv==0.9.26
+urllib3==2.7.0  # fixed: information disclosure via cross-origin redirects forwarding sensitive headers when using assert_same_host=False (>=2.7.0); DoS via excessive HTTP response decompression when using Brotli or partial reads with drain_conn() (>=2.7.0)
+uv==0.11.16  # fixed: arbitrary file write through entry point names placing scripts outside environment's scripts directory (>=0.11.15); arbitrary file deletion through malformed RECORD entries with path traversal during uninstall (>=0.11.16)
 uvicorn==0.40.0
 virtualenv==20.36.1
 watchfiles==1.1.1
 websocket-client==1.9.0
 websockets==16.0
-wheel==0.45.1
+wheel==0.46.2  # fixed: privilege escalation via chmod trusting untrusted archive header filename during unpack (>=0.46.2)
 yarl==1.22.0
 youtube-transcript-api==1.2.3
 zipp==3.23.0
