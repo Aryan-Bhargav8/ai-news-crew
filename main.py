@@ -2,11 +2,12 @@ from crewai import Crew, Process
 from agents import researcher, reporting_analyst
 from tasks import reporting_task, research_task
 import asyncio
+import logging
 
 #####################
 from fastapi import FastAPI,HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 # now it runs when we request the api
 
@@ -25,6 +26,19 @@ app.add_middleware(
 
 class TopicRequest(BaseModel):
     topic: str
+
+    @field_validator('topic')
+    @classmethod
+    def validate_topic(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError('topic must not be empty')
+        if len(v) > 300:
+            raise ValueError('topic must not exceed 300 characters')
+        import re
+        if not re.match(r'^[\w\s\-.,!?()]+$', v):
+            raise ValueError('topic contains invalid characters')
+        return v
 
 _crew_lock = asyncio.Lock()
 
@@ -52,4 +66,5 @@ async def Run(inputs:TopicRequest):
             result = crew.kickoff(inputs={"topic": inputs.topic})
         return {"result": result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.exception("Error running crew pipeline")
+        raise HTTPException(status_code=500, detail="An internal server error occurred.")
